@@ -123,7 +123,7 @@ sub pblParseQuery
 	return 1;
 }
 
-# Returns the magic line which tells WWW that we're an HTML document
+# Returns the magic line needed for each HTML document
 #
 sub pblPrintHeader
 {
@@ -163,7 +163,7 @@ sub pblPrintTemplateToFile
 
 	local (@LOOPLINES);
 	local ($FILENAME);
-	local ( $INCNAME, $CMD, $FILE, $VARNAME, $LOOPVARS );
+	local ( $INCNAME, $FILE, $VARNAME, $LOOPVARS );
 	local ( $IGNOREFLAG, $IGNORENAME );
 	local ($PrintComments);
 
@@ -202,7 +202,7 @@ sub pblPrintTemplateToFile
 # If we are currently ignoring the lines because an IFDEF or IFNDEF evaluated to FALSE
 		if ( $IGNOREFLAG == 1 )
 		{
-			if ( ($VARNAME) = m/<!--#ENDIF\s+(.*)\s*-->/ )
+			if ( ($VARNAME) = m/<!--#ENDIF\s+\"(.*)\"\s*-->/ )
 			{
 				&PBL_TRACE("ENDIF $VARNAME looking for ENDIF $IGNORENAME\n");
 
@@ -219,7 +219,7 @@ sub pblPrintTemplateToFile
 		else
 		{
 			# see whether there is an ifdef statement
-			if ( ($VARNAME) = m/<!--#IFDEFf\s+(.*)\s*-->/ )
+			if ( ($VARNAME) = m/<!--#IFDEFf\s+\"(.*)\"\s*-->/ )
 			{
 				if ( !( defined( $Replace{$VARNAME} ) ) )
 				{
@@ -233,7 +233,7 @@ sub pblPrintTemplateToFile
 					);
 				}
 			}
-			elsif ( ($VARNAME) = m/<!--#IFNDEF\s+(.*)\s*-->/ )
+			elsif ( ($VARNAME) = m/<!--#IFNDEF\s+\"(.*)\"\s*-->/ )
 			{
 				# if the variable is defined
 				if ( defined( $Replace{$VARNAME} ) )
@@ -293,11 +293,12 @@ sub pblPrintTemplateToFile
 		}
 
 		# handle include files by a recursive call to this function
-		if ( ( $INCNAME ) = m/<!--#INCLUDE\s+(.*)\s*-->/ )
+		#
+		if ( ( $INCNAME ) = m/<!--#INCLUDE\s+\"(.*)\"\s*-->/ )
 		{
 			if ($PrintComments)
 			{
-				printf( $FH "<!-- START %s\"%s\" -->\n", $CMD, $INCNAME );
+				printf( $FH "<!-- INCLUDE \"%s\" -->\n", $INCNAME );
 			}
 
 			# recursive call to this function
@@ -306,7 +307,7 @@ sub pblPrintTemplateToFile
 
 			if ($PrintComments)
 			{
-				printf( $FH "<!-- END %s\"%s\" -->\n", $CMD, $INCNAME );
+				printf( $FH "\n<!-- ENDINCLUDE \"%s\" -->\n", $INCNAME );
 			}
 		}
 		else
