@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+
+ Test004_IfdefIfndef.html - template using IFDEF and IFNDEF.
+ 
+ This software is a part of Peter Graf's perl base library - PBL
+
+ Peter Graf's perl base library is hosted on GitHub,
+ see http://github.com/peterGraf/pbl-lib/
+
+ For more information on the author Peter Graf,
+ see http://www.mission-base.com/
+
+ Copyright (c) 2018 Peter Graf. All rights reserved.
+
+ This software is published under the GNU General Public License, version 2.
+
+ GNU General Public License, version 2:
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+
+<!--#INCLUDE "Test003_Header.html" -->
+
+<body>
+<hr>
+
+<h1>
+Header of Ifdef - IfNdef
+</h1>
+
+<p>
+This starting text should be shown.
+</p>
+
+<p>
+
+<!--#IFDEF "NOT_DEFINED"-->
+
+  As NOT_DEFINED is not defined, this text should not be shown.
+  
+<!--#ENDIF "NOT_DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFNDEF "NOT_DEFINED"-->
+
+  As NOT_DEFINED is not defined, this text should be shown.
+  
+<!--#ENDIF "NOT_DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFDEF "DEFINED"-->
+
+  As DEFINED is defined, this text should not be shown.
+  
+<!--#ENDIF "DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFNDEF "DEFINED"-->
+
+  As DEFINED is not defined, this text should not be shown.
+  
+<!--#ENDIF "DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFNDEF "NOT_DEFINED"-->
+
+<p>
+
+<!--#IFDEF "DEFINED"-->
+
+  As NOT_DEFINED is not defined and DEFINED is defined, this text should not be shown.
+  
+<!--#ENDIF "DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFNDEF "DEFINED"-->
+
+  As DEFINED is not defined, this text should not be shown.
+  
+<!--#ENDIF "DEFINED"-->
+
+</p>
+  
+<!--#ENDIF "NOT_DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFDEF "DEFINED"-->
+
+<p>
+
+<!--#IFDEF "NOT_DEFINED"-->
+
+  As NOT_DEFINED is not defined, this text should not be shown.
+  
+<!--#ENDIF "NOT_DEFINED"-->
+
+</p>
+
+<p>
+
+<!--#IFNDEF "NOT_DEFINED"-->
+
+  As DEFINED is defined and NOT_DEFINED is not defined, this text should be shown.
+  
+<!--#ENDIF "NOT_DEFINED"-->
+
+</p>
+
+  
+<!--#ENDIF "DEFINED"-->
+
+</p>
+
+<!--#INCLUDE "Test003_Footer.html" -->
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 ##
-# Test003_HelloWorld.pl - prints a simple template using includes.
+# Test004_IfdefIfndef.pl - prints a simple template using IFDEF and IFNDEF.
 #
 # This software is a part of Peter Graf's perl base library - PBL
 #
@@ -46,6 +46,8 @@ use warnings;
 
 print &pblPrintHeader;
 
-&pblPrintTemplate("Test003_HelloWorld.html", "../templates", "../templates");
+&pblSaveForReplace("DEFINED", "");
+
+&pblPrintTemplate("Test004_IfdefIfndef.html", "../templates", "../templates");
 
 &PBL_TRACE("\nFINISHED\n");
