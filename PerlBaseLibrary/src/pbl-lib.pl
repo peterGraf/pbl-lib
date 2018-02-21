@@ -36,7 +36,6 @@ my $PBL_TRACE;
 $PBL_TRACE = 'D:/temp/PBL_TRACE.LOG';
 
 ##
-#
 # Prints debug information to a file if $PBL_TRACE is set to a filename.
 #
 # $PBL_TRACE='/tmp/PBL_TRACE.LOG';
@@ -66,7 +65,6 @@ sub PBL_TRACE
 }
 
 ##
-#
 # Reads in GET or POST query data, converts it to non-escaped text,
 # and saves each parameter in the query map.
 #
@@ -125,6 +123,7 @@ sub pblParseQuery
 	return 1;
 }
 
+##
 # Returns the magic line needed for each HTML document
 #
 sub pblPrintHeader
@@ -165,7 +164,7 @@ sub pblPrintTemplateToFile
 
 	local (@LOOPLINES);
 	local ($FILENAME);
-	local ( $INCNAME, $FILE, $VARNAME, $LOOPVARS );
+	local ( $INCNAME, $FILE, $VARNAME );
 	local ( $IGNOREFLAG, $IGNORENAME );
 	local ($PrintComments);
 
@@ -220,13 +219,13 @@ sub pblPrintTemplateToFile
 		}
 		else
 		{
-			# see whether there is an IFDEF statement
+			# See whether there is an IFDEF statement
 			if ( ($VARNAME) = m/<!--#IFDEF\s+\"(.*)\"\s*-->/ )
 			{
 				if ( !( defined( $Replace{$VARNAME} ) ) )
 				{
 					# The variable is not defined we ignore all lines till the
-					# corressponding endif line
+					# corresponding endif line
 					$IGNOREFLAG = 1;
 					$IGNORENAME = $VARNAME;
 
@@ -237,11 +236,11 @@ sub pblPrintTemplateToFile
 			}
 			elsif ( ($VARNAME) = m/<!--#IFNDEF\s+\"(.*)\"\s*-->/ )
 			{
-				# if the variable is defined
+				# Ff the variable is defined
 				if ( defined( $Replace{$VARNAME} ) )
 				{
-					# the variable is defined we ignore all lines till the
-					# corressponding endif line
+					# The variable is defined we ignore all lines till the
+					# corresponding endif line
 					$IGNOREFLAG = 1;
 					$IGNORENAME = $VARNAME;
 					&PBL_TRACE(
@@ -251,7 +250,7 @@ sub pblPrintTemplateToFile
 			}
 		}
 
-		# for non-html templates we do not print the comments
+		# For non-html templates we do not print the comments
 		if ( $PrintComments == 0 )
 		{
 			if (   /<!--#IFDEF\s+/
@@ -266,44 +265,53 @@ sub pblPrintTemplateToFile
 		$IGNOREFLAG && next;
 
 		# Handle for loops
-		if ( ( $VARNAME, $LOOPVARS ) =
-			m/<!--#for\s+loopname=\s*\"(.*)\"\s*loopvars=\s*\"(.*)\"\s*-->/ )
+		if ( ($VARNAME) = m/<!--#FOR\s+\"(.*)\"\s*-->/ )
 		{
 			# read the lines of the loop
 			@LOOPLINES = &pblReadFor( $FILE, $VARNAME );
 
 			# print the lines of the loop
-			&pblPrintFor( $FH, $VARNAME, $LOOPVARS, @LOOPLINES );
+			&pblPrintFor( $FH, $VARNAME, @LOOPLINES );
 
 			# done printing the loop
 			next;
 		}
 
-		# replace all occurrences of all variables
+		# Replace all occurrences of all variables
 		while ( ($VARNAME) = m/<\$([A-Z_a-z0-9]+)>/ )
 		{
-			# this will produce a replace by an empty string if the
-			# variable is not defined
-			s/<\$$VARNAME>/$Replace{$VARNAME}/g;
+			if ( defined( $Replace{$VARNAME} ) )
+			{
+				s/<\$$VARNAME>/$Replace{$VARNAME}/g;
+			}
+			else
+			{
+				s/<\$$VARNAME>//g;
+			}
 		}
 
-		while ( ($VARNAME) = m/<\#(.+?)>/ )
+		while ( ($VARNAME) = m/<!--\s*([A-Z_a-z0-9]+)\s*-->/ )
 		{
-			# this will produce a replace by an empty string if the
-			# variable is not defined
-			s/<\#$VARNAME>/$Replace{$VARNAME}/g;
+			if ( defined( $Replace{$VARNAME} ) )
+			{
+				s/<!--\s*$VARNAME\s*-->/$Replace{$VARNAME}/g;
+			}
+			else
+			{
+				s/<!--\s*$VARNAME\s*-->//g;
+			}
 		}
 
-		# handle include files by a recursive call to this function
+		# Handle include files by a recursive call to this function
 		#
-		if ( ( $INCNAME ) = m/<!--#INCLUDE\s+\"(.*)\"\s*-->/ )
+		if ( ($INCNAME) = m/<!--#INCLUDE\s+\"(.*)\"\s*-->/ )
 		{
 			if ($PrintComments)
 			{
 				printf( $FH "<!-- INCLUDE \"%s\" -->\n", $INCNAME );
 			}
 
-			# recursive call to this function
+			# Recursive call to this function
 			&pblPrintTemplateToFile( $FH, "$INCNAME", $templateDir,
 				$templateDir );
 
@@ -322,81 +330,94 @@ sub pblPrintTemplateToFile
 	return 1;
 }
 
-# =DocStart= sub pblPrintFor
+##
 # Print all lines of a for loop
+#
 sub pblPrintFor
 {
-	local ( $FH, $loopname, $loopvars, @looplines ) = @_;
-
-	# =DocEnd=
-	local (@myloopvars);
+	local ( $FH, $loopname, @looplines ) = @_;
 	local ($done);
 	local ($line);
-	local ($loopvar);
 	local ($VARNAME);
 	local ($incarnation);
 	local ($i);
+	local ($loopvar);
 
-	# print a line telling that this is a loop to the file
-	print $FH "<!--#for loopname=\"$loopname\" loopvars=\"$loopvars\" -->\n";
+	# Print a line telling that this is a loop to the file
+	print $FH "<!--#FOR \"$loopname\" -->\n";
 
-	# get rid of blanks in the loopvars
-	$loopvars =~ s/\s*//g;
-
-	# split them into an array
-	@myloopvars = split( ',', $loopvars );
-
-	# now print the lines
+	# Print the lines
 	$incarnation = -1;
 	while (1)
 	{
 		$incarnation++;
-		$done = 1;
-
-		# see if at least one of the loopvars is set for this incarnation
-		foreach $i ( 0 .. $#myloopvars )
+		$done    = 1;
+		$loopvar = "$loopname" . "_" . "$incarnation";
+		if ( defined( $Replace{"$loopvar"} ) )
 		{
-			$loopvar = "$myloopvars[ $i ]" . "$incarnation";
-			if ( defined( $Replace{"$loopvar"} ) )
-			{
-				&PBL_TRACE("pblPrintFor: \"$loopvar\" set\n");
-				$done = 0;
-				last;
-			}
-			else
-			{
-				&PBL_TRACE("pblPrintFor: \"$loopvar\" not set\n");
-			}
+			&PBL_TRACE("pblPrintFor: \"$loopvar\" set\n");
+			$done = 0;
+		}
+		else
+		{
+			&PBL_TRACE("pblPrintFor: \"$loopvar\" not set\n");
 		}
 
-		# see whether we are done
+		# See whether we are done
 		if ( $done == 1 )
 		{
-			print $FH "<!--#endfor loopname=\"$loopname\" -->\n";
+			print $FH "<!--#ENDFOR \"$loopname\" -->\n";
 			return 1;
 		}
 
-		# print a line to the file
+		# Print a line to the file
 		print $FH "<!-- i=$incarnation -->\n";
 
-		# print all lines of the for loop
+		# Print all lines of the for loop
 		foreach $i ( 0 .. $#looplines )
 		{
 			$line = $looplines[$i];
 
-			# replace all occurrences of all variables
+			# Replace all occurrences of all variables
 			while ( ($VARNAME) = $line =~ m/<\$([A-Z_a-z0-9]+)>/ )
 			{
-				# if this is a loopvar
-				$loopvar = "$VARNAME" . "$incarnation";
+				# If this is a loopvar
+				$loopvar = "$VARNAME" . "_" . "$incarnation";
 				if ( defined( $Replace{"$loopvar"} ) )
 				{
 					$line =~ s/<\$$VARNAME>/$Replace{ "$loopvar" }/g;
 				}
 				else
 				{
-					# replace other variables
-					$line =~ s/<\$$VARNAME>/$Replace{$VARNAME}/g;
+					if ( defined( $Replace{$VARNAME} ) )
+					{
+						$line =~ s/<\$$VARNAME>/$Replace{$VARNAME}/g;
+					}
+					else
+					{
+						$line =~ s/<\$$VARNAME>//g;
+					}
+				}
+			}
+
+			while ( ($VARNAME) = $line =~ m/<!--\s*([A-Z_a-z0-9]+)\s*-->/ )
+			{
+				# If this is a loopvar
+				$loopvar = "$VARNAME" . "_" . "$incarnation";
+				if ( defined( $Replace{"$loopvar"} ) )
+				{
+					$line =~ s/<!--\s*$VARNAME\s*-->/$Replace{ "$loopvar" }/g;
+				}
+				else
+				{
+					if ( defined( $Replace{$VARNAME} ) )
+					{
+						$line =~ s/<!--\s*$VARNAME\s*-->/$Replace{ $VARNAME }/g;
+					}
+					else
+					{
+						$line =~ s/<!--\s*$VARNAME\s*-->//g;
+					}
 				}
 			}
 
@@ -406,13 +427,12 @@ sub pblPrintFor
 	}
 }
 
-# =DocStart= sub pblReadFor
-# Read all lines until the corresponding enfor line of a for loop
+##
+# Read all lines until the corresponding ENDFOR line of a for loop
+#
 sub pblReadFor
 {
 	local ( $IN, $loopname ) = @_;
-
-	# =DocEnd=
 	local ( $VARNAME, $IGNOREFLAG, $IGNORENAME, @LINELIST );
 
 	&PBL_TRACE("pblReadFor: $loopname\n");
@@ -420,17 +440,17 @@ sub pblReadFor
 	$IGNOREFLAG = 0;
 	while (<$IN>)
 	{
-		# if we are currently ignoring the lines because an ifdef or ifndef
+		# If we are currently ignoring the lines because an ifdef or ifndef
 		# evaluated to FALSE
 		if ( $IGNOREFLAG == 1 )
 		{
-			# see whether we found an endif
-			if ( ($VARNAME) = m/<!--#endif\s+variable=\s*\"(.*)\"\s*-->/ )
+			# See whether we found an endif
+			if ( ($VARNAME) = m/<!--#ENDIF\s+\"(.*)\"\s*-->/ )
 			{
 				&PBL_TRACE(
 					"found endif $VARNAME looking for endif $IGNORENAME\n");
 
-				# see whether it is the right endif
+				# See whether it is the right endif
 				if ( $VARNAME eq $IGNORENAME )
 				{
 					&PBL_TRACE("matches $IGNORENAME\n");
@@ -445,14 +465,14 @@ sub pblReadFor
 		}
 		else
 		{
-			# see whether there is an ifdef statement
-			if ( ($VARNAME) = m/<!--#ifdef\s+variable=\s*\"(.*)\"\s*-->/ )
+			# See whether there is an ifdef statement
+			if ( ($VARNAME) = m/<!--#IFDEF\s+\"(.*)\"\s*-->/ )
 			{
-				# if the variable is not defined
+				# If the variable is not defined
 				if ( !( defined( $Replace{$VARNAME} ) ) )
 				{
-					# the variable is not defined we ignore all lines till the
-					# corressponding endif line
+					# The variable is not defined we ignore all lines till the
+					# corresponding endif line
 					$IGNOREFLAG = 1;
 					$IGNORENAME = $VARNAME;
 
@@ -461,13 +481,13 @@ sub pblReadFor
 					);
 				}
 			}
-			elsif ( ($VARNAME) = m/<!--#ifndef\s+variable=\s*\"(.*)\"\s*-->/ )
+			elsif ( ($VARNAME) = m/<!--#IFNDEF\s+\"(.*)\"\s*-->/ )
 			{
-				# if the variable is defined
+				# If the variable is defined
 				if ( defined( $Replace{$VARNAME} ) )
 				{
-					# the variable is defined we ignore all lines till the
-					# corressponding endif line
+					# The variable is defined we ignore all lines till the
+					# corresponding endif line
 					$IGNOREFLAG = 1;
 					$IGNORENAME = $VARNAME;
 					&PBL_TRACE(
@@ -477,11 +497,11 @@ sub pblReadFor
 			}
 		}
 
-		# if we are in ignore mode we don't do anything
+		# If we are in ignore mode we don't do anything
 		$IGNOREFLAG && next;
 
 		# see wether we found the endfor
-		if ( ($VARNAME) = m/<!--#endfor\s+loopname=\s*\"(.*)\"\s*-->/ )
+		if ( ($VARNAME) = m/<!--#ENDFOR\s+\"(.*)\"\s*-->/ )
 		{
 			if ( $VARNAME eq $loopname )
 			{
@@ -498,7 +518,7 @@ sub pblReadFor
 	return (@LINELIST);
 }
 
-# =DocStart= sub pblSaveForReplace
+##
 # Save a string for later replacement, the string is saved in the global
 # associative array Replace.
 # If more than one string is saved for the same replacement variable
@@ -508,7 +528,6 @@ sub pblSaveForReplace
 {
 	local ( $key, $value ) = @_;
 
-	# =DocEnd=
 	&PBL_TRACE("SavedForReplace \"$key\"=\"$value\"\n");
 	$Replace{$key} .= $value;
 }

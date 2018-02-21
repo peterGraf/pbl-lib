@@ -37,114 +37,73 @@
 <!--#INCLUDE "Test003_Header.html" -->
 
 <body>
-<hr>
+	<hr>
 
-<h1>
-Header of Ifdef - IfNdef
-</h1>
+	<h1>Header of IfDef - IfNdef</h1>
 
-<p>
-This starting text should be shown.
-</p>
+	<p>This starting text should be shown.</p>
+	<p>DEFINED is replaced by '<!--DEFINED-->'.</p>
+	<p>NOT_DEFINED is replaced by '<!--NOT_DEFINED-->'.</p>
 
-<p>
+	<!--#IFDEF "NOT_DEFINED"-->
 
-<!--#IFDEF "NOT_DEFINED"-->
+	<p>As NOT_DEFINED is not defined, this text should not be shown.</p>
 
-  As NOT_DEFINED is not defined, this text should not be shown.
-  
-<!--#ENDIF "NOT_DEFINED"-->
+	<!--#ENDIF "NOT_DEFINED"-->
 
-</p>
+	<!--#IFNDEF "NOT_DEFINED"-->
 
-<p>
+	<p>As NOT_DEFINED is not defined, this text should be shown.</p>
 
-<!--#IFNDEF "NOT_DEFINED"-->
+	<!--#ENDIF "NOT_DEFINED"-->
 
-  As NOT_DEFINED is not defined, this text should be shown.
-  
-<!--#ENDIF "NOT_DEFINED"-->
+	<!--#IFDEF "DEFINED"-->
 
-</p>
+	<p>As DEFINED is defined, this text should not be shown.</p>
 
-<p>
+	<!--#ENDIF "DEFINED"-->
 
-<!--#IFDEF "DEFINED"-->
+	<!--#IFNDEF "DEFINED"-->
 
-  As DEFINED is defined, this text should not be shown.
-  
-<!--#ENDIF "DEFINED"-->
+	<p>As DEFINED is not defined, this text should not be shown.</p>
 
-</p>
+	<!--#ENDIF "DEFINED"-->
 
-<p>
+	<!--#IFNDEF "NOT_DEFINED"-->
 
-<!--#IFNDEF "DEFINED"-->
+	<!--#IFDEF "DEFINED"-->
 
-  As DEFINED is not defined, this text should not be shown.
-  
-<!--#ENDIF "DEFINED"-->
+	<p>As NOT_DEFINED is not defined and DEFINED is defined, this text
+		should be shown.</p>
 
-</p>
+	<!--#ENDIF "DEFINED"-->
 
-<p>
+	<!--#IFNDEF "DEFINED"-->
 
-<!--#IFNDEF "NOT_DEFINED"-->
+	<p>As DEFINED is defined, this text should not be shown.</p>
 
-<p>
+	<!--#ENDIF "DEFINED"-->
 
-<!--#IFDEF "DEFINED"-->
+	<!--#ENDIF "NOT_DEFINED"-->
 
-  As NOT_DEFINED is not defined and DEFINED is defined, this text should not be shown.
-  
-<!--#ENDIF "DEFINED"-->
+	<!--#IFDEF "DEFINED"-->
 
-</p>
+	<!--#IFDEF "NOT_DEFINED"-->
 
-<p>
+	<p>As NOT_DEFINED is not defined, this text should not be shown.</p>
 
-<!--#IFNDEF "DEFINED"-->
+	<!--#ENDIF "NOT_DEFINED"-->
 
-  As DEFINED is not defined, this text should not be shown.
-  
-<!--#ENDIF "DEFINED"-->
+	<!--#IFNDEF "NOT_DEFINED"-->
 
-</p>
-  
-<!--#ENDIF "NOT_DEFINED"-->
+	<p>As DEFINED is defined and NOT_DEFINED is not defined, this text
+		should be shown.</p>
 
-</p>
+	<!--#ENDIF "NOT_DEFINED"-->
 
-<p>
+	<!--#ENDIF "DEFINED"-->
 
-<!--#IFDEF "DEFINED"-->
-
-<p>
-
-<!--#IFDEF "NOT_DEFINED"-->
-
-  As NOT_DEFINED is not defined, this text should not be shown.
-  
-<!--#ENDIF "NOT_DEFINED"-->
-
-</p>
-
-<p>
-
-<!--#IFNDEF "NOT_DEFINED"-->
-
-  As DEFINED is defined and NOT_DEFINED is not defined, this text should be shown.
-  
-<!--#ENDIF "NOT_DEFINED"-->
-
-</p>
-
-  
-<!--#ENDIF "DEFINED"-->
-
-</p>
-
-<!--#INCLUDE "Test003_Footer.html" -->
+	<!--#INCLUDE "Test003_Footer.html" -->
 
 </body>
 </html>

@@ -3,7 +3,7 @@
 
 <!--
 
- Test003_HelloWorld.html - template of the Hello World example.
+ Test004_IfdefIfndef.html - template using IFDEF and IFNDEF.
  
  This software is a part of Peter Graf's perl base library - PBL
 
@@ -39,8 +39,19 @@
 <body>
 	<hr>
 
-	<h1>Header of Hello World</h1>
-	<p>Hello World</p>
+	<h1>Header of IfDef - IfNdef</h1>
+
+	<p>This starting text should be shown.</p>
+	<p>DEFINED is replaced by '<!--DEFINED-->'.</p>
+
+	<!--#FOR "DEFINED"-->
+
+	<p>As DEFINED is defined, this text should be shown.</p>
+	<p>DEFINED is replaced by '<!--DEFINED-->'.</p>
+	<p>DEFINED_0 is replaced by '<!-- DEFINED_0 -->'.</p>
+	<p>DEFINED_1 is replaced by '<!--DEFINED_1-->'.</p>
+
+	<!--#ENDFOR "DEFINED"-->
 
 	<!--#INCLUDE "Test003_Footer.html" -->
 

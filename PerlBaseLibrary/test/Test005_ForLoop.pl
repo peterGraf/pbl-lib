@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 ##
-# Test004_IfdefIfndef.pl - prints a simple template using IFDEF and IFNDEF.
+# Test005_ForLoop.pl - prints a simple template using a FOR loop.
 #
 # This software is a part of Peter Graf's perl base library - PBL
 #
@@ -46,8 +46,9 @@ use warnings;
 
 print &pblPrintHeader;
 
-&pblSaveForReplace("DEFINED", "Replaced");
+&pblSaveForReplace("DEFINED_0", "Value 0");
+&pblSaveForReplace("DEFINED_1", "Value 1");
 
-&pblPrintTemplate("Test004_IfdefIfndef.html", "../templates", "../templates");
+&pblPrintTemplate("Test005_ForLoop.html", "../templates", "../templates");
 
 &PBL_TRACE("\nFINISHED\n");
