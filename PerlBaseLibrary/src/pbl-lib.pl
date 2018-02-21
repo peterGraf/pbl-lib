@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 #
+##
+# pbl-lib.pl - Perl library for web cgi processing.
+#
 # This software is a part of Peter Graf's perl base library - PBL
 #
 # Peter Graf's perl base library is hosted on GitHub,
@@ -217,8 +220,8 @@ sub pblPrintTemplateToFile
 		}
 		else
 		{
-			# see whether there is an ifdef statement
-			if ( ($VARNAME) = m/<!--#IFDEFf\s+\"(.*)\"\s*-->/ )
+			# see whether there is an IFDEF statement
+			if ( ($VARNAME) = m/<!--#IFDEF\s+\"(.*)\"\s*-->/ )
 			{
 				if ( !( defined( $Replace{$VARNAME} ) ) )
 				{
@@ -228,7 +231,7 @@ sub pblPrintTemplateToFile
 					$IGNORENAME = $VARNAME;
 
 					&PBL_TRACE(
-"Var $VARNAME not defined, ignoring till endif $IGNORENAME\n"
+"Var $VARNAME not defined, ignoring till ENDIF $IGNORENAME\n"
 					);
 				}
 			}
@@ -242,13 +245,13 @@ sub pblPrintTemplateToFile
 					$IGNOREFLAG = 1;
 					$IGNORENAME = $VARNAME;
 					&PBL_TRACE(
-"Var $VARNAME defined, ignoring till endif $IGNORENAME\n"
+"Var $VARNAME defined, ignoring till ENDIF $IGNORENAME\n"
 					);
 				}
 			}
 		}
 
-		# for vrml templates we do not print the comments
+		# for non-html templates we do not print the comments
 		if ( $PrintComments == 0 )
 		{
 			if (   /<!--#IFDEF\s+/
